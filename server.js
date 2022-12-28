@@ -14,10 +14,20 @@ app.get ('/auth', async (req, res) => {
     }
   });
 
-  //get authorization token
-  app.get (process.env.REDIRECT_URI, async (req, res) => {
+  //
+  app.get ('/api/callback', async (req, res) => {
     // ! get authorization token from request parameter
     const authorization_token = req.query.code;
+    try {
+      // ! get access token using authorization token
+      const response = await utils.get_access_token (authorization_token.code);
+      console.log ({data: response.data});
+      // get access token from payload
+      const {access_token} = response.data;
+    } catch (error) {
+      res.sendStatus (500);
+    }
+  
   });
 
 app.listen(port, () => console.log("server listening on port : " + port))

@@ -18,7 +18,7 @@ const scopes = ["profile", "email", "openid"];
 const request_get_auth_code_url = `${google_auth_token_endpoint}?${query_string.stringify(
   auth_token_params
 )}&scope=${scopes.join(" ")}`;
-module.exports = { request_get_auth_code_url };
+
 
 //use token access
 const get_access_token = async auth_code => {
@@ -33,3 +33,6 @@ const get_access_token = async auth_code => {
       url: `${google_access_token_endpoint}?${query_string.stringify (access_token_params)}`,
     });
   };
+
+
+  module.exports = { request_get_auth_code_url };
