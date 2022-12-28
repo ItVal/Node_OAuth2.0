@@ -14,4 +14,10 @@ app.get ('/auth', async (req, res) => {
     }
   });
 
+  //get authorization token
+  app.get (process.env.REDIRECT_URI, async (req, res) => {
+    // ! get authorization token from request parameter
+    const authorization_token = req.query.code;
+  });
+
 app.listen(port, () => console.log("server listening on port : " + port))
