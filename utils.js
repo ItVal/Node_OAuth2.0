@@ -1,12 +1,14 @@
 const query_string = require("querystring");
-const axios = require("axios")
-const google_auth_token_endpoint = "https://accounts.google.com/o/oauth2/v2/auth";
-
+const axios = require("axios");
+const google_auth_token_endpoint =
+  "https://accounts.google.com/o/oauth2/v2/auth";
 
 const query_params = {
-  client_id: process.env.CLIENT_ID,
-  redirect_uri: `http://localhost:4000${process.env.REDIRECT_URI}`,
+  client_id:
+    "votre Cientid google",
+  redirect_uri: "http://localhost:4000/api/callback",
 };
+
 // this objects contains information that will be passed as query params to the auth // token endpoint
 const auth_token_params = {
   ...query_params,
@@ -14,25 +16,45 @@ const auth_token_params = {
 };
 // the scopes (portion of user's data) we want to access
 const scopes = ["profile", "email", "openid"];
+
 // a url formed with the auth token endpoint and the
 const request_get_auth_code_url = `${google_auth_token_endpoint}?${query_string.stringify(
   auth_token_params
 )}&scope=${scopes.join(" ")}`;
 
-
-//use token access
-const get_access_token = async auth_code => {
-    const access_token_params = {
-      ...query_params,
-      client_secret: process.env.CLIENT_SECRET,
-      code: auth_code,
-      grant_type: 'authorization_code',
-    };
-    return await axios ({
-      method: 'post',
-      url: `${google_access_token_endpoint}?${query_string.stringify (access_token_params)}`,
-    });
+//Use This Authorization Token to Obtain an Access Token
+const get_access_token = async (auth_code) => {
+  const access_token_params = {
+    ...query_params,
+    client_secret: "votre Client Secret google",
+    code: auth_code,
+    grant_type: "authorization_code",
+    response_type: "token",
+    scope: "https://www.googleapis.com/auth/userInfo.profile",
   };
+  const res = await axios({
+    method: "post",
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+    },
+    url: `${google_auth_token_endpoint}?${query_string.stringify(
+      access_token_params
+    )}`,
+  });
+  const data = await res.data;
+  return data;
+};
 
+//Use the Access Token to Obtain the User Profile Data
+const get_profile_data = async (access_token) => {
+  return await axios({
+    method: "post",
+    url: `https://www.googleapis.com/oauth2/v3/userinfo?alt=json&access_token=${access_token}`,
+  });
+};
 
-  module.exports = { request_get_auth_code_url };
+module.exports = {
+  request_get_auth_code_url,
+  get_access_token,
+  get_profile_data,
+};
